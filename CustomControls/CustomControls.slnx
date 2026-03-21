@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="WinFormsPlayground/WinFormsPlayground.csproj" />
+  <Project Path="WinFormsPlaygroundTests/WinFormsPlaygroundTests.csproj" Id="1899b144-57e8-48ac-bef6-b3b006b86fb4" />
+</Solution>
