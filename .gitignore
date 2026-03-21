@@ -1,0 +1,60 @@
+# Visual Studio / .NET general
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+
+# Build Folders
+bin/
+obj/
+Debug/
+Release/
+
+# Rider / JetBrains
+.idea/
+*.iml
+
+# NuGet packages
+*.nupkg
+packages/
+# Uncomment if using Package Restore
+# project.lock.json
+# project.fragment.lock.json
+# *.nuget.props
+# *.nuget.targets
+
+# Test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+*.testsettings
+
+# Visual Studio Code
+.vscode/
+
+# Publish / deployment
+*.publishsettings
+*.deploy
+*.pubxml
+*.pubxml.user
+
+# Windows files
+Thumbs.db
+Desktop.ini
+
+# Others
+*.log
+*.vsmdi
+*.pdb
+*.exe
+*.dll
+*.cache
+*.bak
+*.tmp
+*.swp
