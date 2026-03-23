@@ -6,6 +6,10 @@ namespace WinFormsPlayground.Models
     {
         public DateTime CurrentMonth { get; set; } = DateTime.Today;
 
+        public DateTime PreviousMonth => CurrentMonth.AddMonths(-1);
+
+        public int DaysInPreviousMonth => DateTime.DaysInMonth(PreviousMonth.Year, PreviousMonth.Month);
+
         public DateTime FirstDay => new DateTime(CurrentMonth.Year, CurrentMonth.Month, 1);
 
         public int StartOffset => ((int)FirstDay.DayOfWeek + 6) % 7;
@@ -31,7 +35,7 @@ namespace WinFormsPlayground.Models
         /// <summary>
         /// Advances the current month by one.
         /// </summary>
-        public void NextMonth()
+        public void SetNextMonth()
         {
             CurrentMonth = CurrentMonth.AddMonths(1);
         }
@@ -39,9 +43,9 @@ namespace WinFormsPlayground.Models
         /// <summary>
         /// Moves the current month back by one.
         /// </summary>
-        public void PreviousMonth()
+        public void SetPreviousMonth()
         {
-            CurrentMonth = CurrentMonth.AddMonths(-1);
+            CurrentMonth = PreviousMonth;
         }
 
         /// <summary>

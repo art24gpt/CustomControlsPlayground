@@ -3,35 +3,37 @@
     public class CalendarLayoutEngine
     {
         private const int DaysOfWeekCount = 7;
+        private const int TotalCells = 42;
 
         /// <summary>
-        /// Calculates the rectangles representing each day cell in the calendar grid.
-        /// The rectangles are positioned based on the cell size, padding, header height, and the start offset of the month.
+        /// Calculates the rectangles representing each cell in the calendar grid.
+        /// This includes all visible cells, not only the days of the current month, 
+        /// so that cells can also represent trailing days from the previous month
+        /// or leading days from the next month.
+        /// The rectangles are positioned based on the cell size, padding, header height, 
+        /// and the start offset of the current month.
         /// </summary>
-        /// <param name="daysInMonth">Number of days in the current month.</param>
         /// <param name="startOffset">Offset of the first day of the month in the week (0 = Monday, 6 = Sunday).</param>
         /// <param name="cellSize">Size (width and height) of each day cell.</param>
         /// <param name="cellPadding">Padding inside each day cell.</param>
         /// <param name="headerHeight">Height of the calendar header (used for vertical offset).</param>
-        /// <returns>An array of rectangles representing the position and size of each day cell.</returns>
+        /// <returns>An array of rectangles representing the position and size of each cell in the calendar grid.</returns>
         public Rectangle[] CalculateDayRects(
-            int daysInMonth,
             int startOffset,
             int cellSize,
             int cellPadding,
             int headerHeight)
         {
-            Rectangle[] rects = new Rectangle[daysInMonth];
+            Rectangle[] rects = new Rectangle[TotalCells];
 
-            for (int i = 0; i < daysInMonth; i++)
+            for (int i = 0; i < TotalCells; i++)
             {
-                int index = i + startOffset;
-                int row = index / DaysOfWeekCount;
-                int col = index % DaysOfWeekCount;
+                int row = i / DaysOfWeekCount;
+                int col = i % DaysOfWeekCount;
 
                 rects[i] = new Rectangle(
                     col * cellSize + cellPadding,
-                    row * cellSize + headerHeight + cellSize + cellPadding,
+                    row * cellSize + headerHeight + cellPadding,
                     cellSize - 2 * cellPadding,
                     cellSize - 2 * cellPadding
                 );
@@ -56,15 +58,15 @@
         }
 
         /// <summary>
-        /// Determines which day corresponds to a given point within the calendar grid.
-        /// Returns null if the point is outside the day cells or outside the valid month range.
+        /// Determines which day of the current month corresponds to a given point within the calendar grid.
+        /// Returns null if the point is outside the grid or if it corresponds to a day not in the current month.
         /// </summary>
         /// <param name="location">The point (mouse position) to check.</param>
         /// <param name="cellSize">Size of each day cell.</param>
         /// <param name="headerHeight">Height of the calendar header.</param>
         /// <param name="startOffset">Offset of the first day of the month in the week (0 = Monday).</param>
         /// <param name="daysInMonth">Total number of days in the current month.</param>
-        /// <returns>The day number corresponding to the point, or null if outside the grid.</returns>
+        /// <returns>The day number in the current month corresponding to the point, or null if outside the grid or not in the current month.</returns>
         public int? GetDayFromLocation(
             Point location,
             int cellSize,
@@ -74,7 +76,7 @@
         {
             // offset relative to top-left corner of the first day cell
             int x = location.X;
-            int y = location.Y - headerHeight - cellSize;
+            int y = location.Y - headerHeight;
 
             // reject points left of grid or above first row
             if (x < 0 || y < 0)

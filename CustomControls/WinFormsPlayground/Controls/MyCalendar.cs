@@ -32,6 +32,7 @@ namespace WinFormsPlayground.Controls
         private Brush? backgroundBrush;
         private readonly SolidBrush todayBackgroundBrush = new SolidBrush(Color.LightBlue);
         private readonly SolidBrush dayBackgroundBrush = new SolidBrush(Color.LightGray);
+        private readonly SolidBrush anotherMonthDayBackgroundBrush = new SolidBrush(Color.LightSlateGray);
         private readonly Pen selectedPen = new Pen(Color.LightBlue, 2);
         private readonly Pen borderPen = new Pen(Color.Gray, 1);
         private readonly Font boldFont;
@@ -106,38 +107,77 @@ namespace WinFormsPlayground.Controls
         }
 
         /// <summary>
-        /// Draws all the day cells for the current month.
+        /// Draws all the day cells in the calendar grid, including:
+        /// - days from the previous month filling the first week,
+        /// - days of the current month,
+        /// - days from the next month filling the last week.
+        /// Uses the isCurrentMonth flag to determine the correct background color and selection logic.
         /// </summary>
         /// <param name="g">Graphics object used for drawing.</param>
         private void DrawDays(Graphics g)
         {
-            for (int i = 0; i < model.DaysInMonth; i++)
+            int totalCells = model.DayRects.Length;
+            int prevMonthFill = model.StartOffset;
+            int daysInMonth = model.DaysInMonth;
+            int daysInPrevMonth = model.DaysInPreviousMonth;
+
+            for (int i = 0; i < totalCells; i++)
             {
-                DrawDay(g, i);
+                int day;
+                if (i < prevMonthFill)
+                {
+                    day = daysInPrevMonth - prevMonthFill + i + 1;
+                }
+                else if (i < prevMonthFill + daysInMonth)
+                {
+                    day = i - prevMonthFill + 1;
+                }
+                else
+                {
+                    day = i - (prevMonthFill + daysInMonth) + 1;
+                }
+
+                DrawDay(g, day, i, i >= prevMonthFill && i < prevMonthFill + daysInMonth);
             }
         }
 
         /// <summary>
-        /// Draws a single day cell, including its background, border, and day number.
-        /// Highlights today and selected days.
+        /// Draws a single day cell in the calendar grid, including its background, border, and day number.
+        /// - Uses a different background for days outside the current month.
+        /// - Highlights today if the day corresponds to the current date.
+        /// - Highlights the selected day if it belongs to the current month.
         /// </summary>
         /// <param name="g">Graphics object used for drawing.</param>
-        /// <param name="index">The zero-based index of the day in the current month.</param>
-        private void DrawDay(Graphics g, int index)
+        /// <param name="day">The day number to draw (1–31).</param>
+        /// <param name="index">The zero-based index of the cell in the calendar grid.</param>
+        /// <param name="isCurrentMonth">True if the day belongs to the current month, false if it is from the previous or next month.</param>
+        private void DrawDay(Graphics g, int day, int index, bool isCurrentMonth)
         {
-            int day = index + 1;
             Rectangle rect = model.DayRects[index];
 
-            bool isToday = model.IsToday(day);
-            bool isSelected = model.IsSelected(day);
+            // Choose background
+            if (!isCurrentMonth)
+                backgroundBrush = anotherMonthDayBackgroundBrush;
+            else if (model.IsToday(day))
+                backgroundBrush = todayBackgroundBrush;
+            else
+                backgroundBrush = dayBackgroundBrush;
 
-            backgroundBrush = isToday ? todayBackgroundBrush : dayBackgroundBrush;
             g.FillRectangle(backgroundBrush, rect);
 
-            Pen pen = isSelected ? selectedPen : borderPen;
+            // Fill colour
+            Pen pen = (isCurrentMonth && model.IsSelected(day)) ? selectedPen : borderPen;
             g.DrawRectangle(pen, rect);
 
-            TextRenderer.DrawText(g, CalendarModel.DayStrings[day - 1], this.Font, rect, TextColorBlack, TextFormatFlags);
+            // Draw day number
+            TextRenderer.DrawText(
+                g,
+                CalendarModel.DayStrings[day - 1],
+                this.Font,
+                rect,
+                TextColorBlack,
+                TextFormatFlags
+            );
         }
         #endregion
 
@@ -164,7 +204,7 @@ namespace WinFormsPlayground.Controls
         {
             if (prevMonthArrow.Contains(location))
             {
-                model.PreviousMonth();
+                model.SetPreviousMonth();
                 CalculateLayout();
                 Invalidate();
                 return true;
@@ -172,7 +212,7 @@ namespace WinFormsPlayground.Controls
 
             if (nextMonthArrow.Contains(location))
             {
-                model.NextMonth();
+                model.SetNextMonth();
                 CalculateLayout();
                 Invalidate();
                 return true;
@@ -209,7 +249,6 @@ namespace WinFormsPlayground.Controls
         private void CalculateLayout()
         {
             model.DayRects = layout.CalculateDayRects(
-                model.DaysInMonth,
                 model.StartOffset,
                 CellSize,
                 CellPadding,
