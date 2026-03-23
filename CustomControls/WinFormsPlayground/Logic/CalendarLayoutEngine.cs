@@ -25,6 +25,7 @@
             int headerHeight)
         {
             Rectangle[] rects = new Rectangle[TotalCells];
+            int yOffset = headerHeight + cellSize;
 
             for (int i = 0; i < TotalCells; i++)
             {
@@ -33,10 +34,9 @@
 
                 rects[i] = new Rectangle(
                     col * cellSize + cellPadding,
-                    row * cellSize + headerHeight + cellPadding,
+                    row * cellSize + yOffset + cellPadding,
                     cellSize - 2 * cellPadding,
-                    cellSize - 2 * cellPadding
-                );
+                    cellSize - 2 * cellPadding);
             }
 
             return rects;
@@ -75,8 +75,9 @@
             int daysInMonth)
         {
             // offset relative to top-left corner of the first day cell
+            int yOffset = headerHeight + cellSize;
             int x = location.X;
-            int y = location.Y - headerHeight;
+            int y = location.Y - yOffset;
 
             // reject points left of grid or above first row
             if (x < 0 || y < 0)
