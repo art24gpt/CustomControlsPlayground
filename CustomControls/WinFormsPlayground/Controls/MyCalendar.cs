@@ -75,7 +75,7 @@ namespace WinFormsPlayground.Controls
         {
             g.DrawString(model.MonthName, boldFont, TextBrush, monthNamePosition);
 
-            (prevMonthArrow, nextMonthArrow) = layout.CalculateMonthArrowRects(this.Width, HeaderHeight, ArrowSize);
+            (prevMonthArrow, nextMonthArrow) = layout.CalculateMonthArrowRects(this.Width, HeaderHeight, ArrowSize, CellSize);
 
             DrawArrow(g, prevMonthArrow, ArrowUpSymbol);
             DrawArrow(g, nextMonthArrow, ArrowDownSymbol);

@@ -47,12 +47,12 @@
         /// <param name="headerHeight">Height of the header section.</param>
         /// <param name="arrowSize">Size of the arrow buttons.</param>
         /// <returns>A tuple containing rectangles for the previous and next month arrows.</returns>
-        public (Rectangle prev, Rectangle next) CalculateMonthArrowRects(int controlWidth, int headerHeight, int arrowSize)
+        public (Rectangle prev, Rectangle next) CalculateMonthArrowRects(int controlWidth, int headerHeight, int arrowSize, int cellSize)
         {
-            int arrowX = controlWidth - arrowSize - 2;
+            int arrowX = controlWidth - cellSize;
             int arrowY = (headerHeight - arrowSize) / 2;
-            return (new Rectangle(arrowX, arrowY, arrowSize, arrowSize),
-                    new Rectangle(arrowX, arrowY + arrowSize + 2, arrowSize, arrowSize));
+            return (new Rectangle(arrowX - cellSize, arrowY, arrowSize, arrowSize),
+                    new Rectangle(arrowX, arrowY, arrowSize, arrowSize));
         }
 
         /// <summary>
